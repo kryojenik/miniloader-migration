@@ -1,0 +1,27 @@
+{
+    "name": "miniloader-migration",
+    "version": "0.0.1",
+    "title": "Miniloader Migration",
+    "description": "Migrate Miniloaders in Factorio 1.1 saves to Loader implementations in Factorio 2.0",
+    "author": "kryojenik",
+    "contact": "https://github.com/kryojenik/miniloader-migration",
+    "homepage": "https://github.com/kryojenik/miniloader-migration",
+    "source": "https://github.com/kryojenik/miniloader-migration",
+    "factorio_version": "2.0",
+    "dependencies": [
+        "base >= 2.0.15",
+        "flib >= 0.15.0",
+        "? space-age >= 2.0.15",
+        "loaders-modernized >= 0.8.3"
+    ],
+    "package": {
+        "git_publish_branch": "main",
+        "ignore": [
+            "TODO.md",
+            "types.lua",
+            "screenshots/*"
+        ],
+        "sync_portal_details": false,
+        "no_git_push": true
+    }
+}

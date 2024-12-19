@@ -1,0 +1,222 @@
+---------------------------------------------------------------------------------------------------
+Version: 0.8.3
+Date: ????
+  Changes:
+---------------------------------------------------------------------------------------------------
+Version: 0.8.2
+Date: 2024-12-16
+  Bugfixes:
+    - Restore original thumbnail
+---------------------------------------------------------------------------------------------------
+Version: 0.8.1
+Date: 2024-12-16
+  Info:
+    - Hopefully everyone likes how this mod works and the direction it is going.
+      I've added a specific Stack loader entity that will operate at your fastest tier belt speed.
+      It will be locked behind Fulgora and require Stack inserters in the recipe.  By enabling this, all
+      other loaders will revert to not Stack.  You can adjust these behaviors with the mod settings.
+      I'm sure with the recent changes I broke something for someone.  Please let me know in the discussions and I'll fix it as soon as I can.
+  Bugfixes:
+    - Fix crash possible crash in multiplayer due to missing nil check (#17)
+    - Turbo loader wasn't requiring to be built on Vulcanus
+    - Fixed technology icons incorrectly tinting the loader frame
+  Features:
+    - Setting added when AAI-Industry is detected which allows user to choose to use AAI-Industry recipe or mod recipe
+    - Separate stack Loader entities option added (Thanks jcclark1414)
+      - Makes a single Stack Loader entity that requires stack inserters.  This will be the default going forward
+      - You are still able to keep the prior behavior where all loader can stack once the research is completed
+      - The stack loader will be able to fill your fastest belt
+---------------------------------------------------------------------------------------------------
+Version: 0.8.0
+Date: 2024-12-05
+  Features:
+    - When AAI-Industry is detected, use recipes that more appropriately fit with AAI-Industry
+    - Add support for Schall Belt Configuration
+  Changes:
+    - Split-lane checkbox caption is now clickable
+    - * Recipe Change * Turbo loaders no-longer require stack inserters when stacking is enabled
+      This made turbo loaders unavailable with the turbo belts until stacking was unlocked on Gleba
+---------------------------------------------------------------------------------------------------
+Version: 0.7.11
+Date: 2024-12-01
+  Bugfixes:
+    - Fix crash from invalid data in storage
+    - Fix crash when replacing a loader a player is standing on
+---------------------------------------------------------------------------------------------------
+Version: 0.7.10
+Date: 2024-11-30
+  Bugfixes:
+    - Fix crash when placing blueprint from library
+---------------------------------------------------------------------------------------------------
+Version: 0.7.9
+Date: 2024-11-30
+  Bugfixes:
+    - Fix loosing quality when switching between split and non-split configurations
+    - Fix split-lane loaders reverting to non-split during fast-replace operations
+  Changes:
+    - RU locale update from Shadow Man
+    - DE locale update from GIGAAj1
+---------------------------------------------------------------------------------------------------
+Version: 0.7.8
+Date: 2024-11-16
+  Bugfixes:
+    - 5Dim's: First 3 tiers of loaders are no longer lost if you were using Loaders Modernized prior to version 0.7.6
+    - Crash when switching to split-lane mode with more than 2 filters / signals plus set-filters
+  Changes:
+    - 5Dim's: You can now keep Turbo Loader active if you need it for some reason.  It is the speed as Mk 4 after all
+    - Improved compatibility when using Ultimate Belts Space Age with 5Dim
+      Loaders Modernized will only make loaders to match 5Dim belts
+      If 5Dim New Transport is not installed, it will make loaders to match Ultimate Belts
+    - RU Locale update from Shadow Man
+---------------------------------------------------------------------------------------------------
+Version: 0.7.7
+Date: 2024-11-15
+  Bugfixes:
+    - Fix typo in Dependency list
+---------------------------------------------------------------------------------------------------
+Version: 0.7.6
+Date: 2024-11-15
+  Bugfixes:
+    - Split-lane UI could show up on other loaders that were not from this mod and did not have split-lane capability
+  Changes:
+    - Add support for 5 Dim New Transport
+---------------------------------------------------------------------------------------------------
+Version: 0.7.5
+Date: 2024-11-10
+  Bugfixes:
+    - Add missing Tech names and descriptions for Ultimate Belts Space Age!
+    - Fix Technology unlock cost for loaders with Ultimate Belts Space Age!
+    - Several spelling errors corrected
+  Changes:
+    - Remove dependency on Turbo Logistics for Ultimate Belts Loaders since the Belts do not
+    - Forgot RU locale update on 7.4 from Shadow Man
+---------------------------------------------------------------------------------------------------
+Version: 0.7.4
+Date: 2024-11-10
+  Bugfixes:
+    - Fix graphics from AAI Loaders not used for items
+    - Fix graphics from AAI loaders used for entities even if setting unchecked
+  Changes:
+    - Add setting to use cheaper, standard recipes when enabling stacking
+    - Leave settings for AAI loaders available.  Allows for both mods to be used simultaneously if you need that for some reason.  Typically AAI Loaders should be set to graphics-only
+---------------------------------------------------------------------------------------------------
+Version: 0.7.3
+Date: 2024-11-06
+  Bugfixes:
+    - Split-lane checkbox not being marked when loader is a ghost. #7
+    - Fix failing to load when Space Age! not enabled. #8
+---------------------------------------------------------------------------------------------------
+Version: 0.7.2
+Date: 2024-11-06
+  Changes:
+    - Update color blind property name change to color_hint
+    - Add setting to enable use of AAI Loader graphics
+  Bugfixes:
+    - Item Import locations not correctly set
+    - Ultimate Belts Space Age! set as optional dependency to make sure load order is deterministic
+---------------------------------------------------------------------------------------------------
+Version: 0.7.1
+Date: 2024-11-04
+  Changes:
+    - Added DE translation - Thanks GIGAAj1
+    - Updated RU translation  - Thanks Shadow Man
+  Bugfixes:
+    - Keep UI open when switching to split-lane mode
+    - Upgrades missing to first tier of Ultimate Belts when available
+    - Ultra Express loader wasn't upgrading (or downgrading)
+---------------------------------------------------------------------------------------------------
+Version: 0.7.0
+Date: 2024-11-02
+  Bugfixes:
+    - Remove sticky warning windows post miniloader migration for other players in multiplayer game
+    - Fixed blueprinting of split lane loaders
+    - Fixed loosing / shifting wires when switching between split and non-split configurations
+    - Deconstruction planner can now remove both split and non-split loaders
+    - Added missing strings for Ultimate Belts Space Age derived loaders
+    - Allow split lane loaders to be upgradeable
+---------------------------------------------------------------------------------------------------
+Version: 0.6.7
+Date: 2024-11-02
+  Bugfixes:
+    - Let loaders operating with a split brain keep their name
+    - Fixed split UI still showing up for chutes if opened another loader previously
+---------------------------------------------------------------------------------------------------
+Version: 0.6.6
+Date: 2024-11-01
+  Bugfixes:
+    - Fixed the dependency to depend on 2.0.14
+---------------------------------------------------------------------------------------------------
+Version: 0.6.4
+Date: 2024-11-01
+  Features:
+    - Added split lanes!!!
+  Bugfixes:
+    - Fixed missing graphic elements
+---------------------------------------------------------------------------------------------------
+Version: 0.6.2
+Date: 2024-10-30
+  Changes:
+    - Added support for Ultimate Belts Space Age
+---------------------------------------------------------------------------------------------------
+Version: 0.6.1
+Date: 2024-10-29
+  Changes:
+    - Added RU translation.  Thanks Shadow_Man
+  Bugfixes:
+    - Early loaders not showing up in Foundry in Space Age!
+    - Fix loaders not stacking after breaking stacking while fixing staking issue
+---------------------------------------------------------------------------------------------------
+Version: 0.6.0
+Date: 2024-10-29
+  Changes:
+    - *** Changed yellow loader recipe to require inserters, not fast-inserters so it can be unlocked with other yellow logistics
+  Bugfixes:
+    - Fix cardinal sin of conditional requires
+    - Fix crash in miniloader migration code
+    - Fixed issue loading when stacking is enabled and space age isn't
+        For now I've removed stacking when space age isn't loaded - will look into it further
+---------------------------------------------------------------------------------------------------
+Version: 0.5.6
+Date: 2024-10-28
+  Features:
+    - New setting to enable belt stacking
+  Bugfixes:
+    - Corrected license information for graphics used
+---------------------------------------------------------------------------------------------------
+Version: 0.5.5
+Date: 2024-10-27
+  Changes:
+    - Updated README
+  Features:
+    - Setting to allow migration from Miniloaders.  Note: kind of experimental ** MAKE A BACKUP **
+    - Adds chutes
+---------------------------------------------------------------------------------------------------
+Version: 0.5.4
+Date: 2024-10-17
+  Changes:
+    - Added settings:
+      - Allow loaders to work without electricity
+      - Double recipe and create loaders 2 at a time
+      - Adjusted turbo-loader recipe to use bulk-inserters vs. stack-inserters
+      - Create additional technologies to unlock the loader recipes
+---------------------------------------------------------------------------------------------------
+Version: 0.5.3
+Date: 2024-10-15
+  Changes:
+    - Added source link to github
+    - Change name of SA logistics to "Turbo"
+  Bugfixes:
+    - Fixed [#1] Loaders Modernized showing up twice in tech unlock
+---------------------------------------------------------------------------------------------------
+Version: 0.5.1
+Date: 1024-10-14
+  Bugfixes:
+    - Corrected some spelling
+---------------------------------------------------------------------------------------------------
+Version: 0.5.0
+Date: 2024-10-14
+  Features:
+    - Initial release
+    - Snapping to belts
+    - Power Consumption
+    - Base and Space Age belts
