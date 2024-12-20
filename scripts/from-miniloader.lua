@@ -1,40 +1,6 @@
 local flib_gui = require("__flib__.gui")
 local table = require("__flib__.table")
 
-local warning_notice =
-[[*** BACKUP ***  BACKUP *** BACKUP ***
-
-Migrating Miniloaders from the miniloader mod is experimental, but I think I have it mostly working well enough to serve your purposes.
-
-Please make sure you have a backup of your game save before you save this migrated save.  There is no path back or undo!
-
-If you notice loaders from a belt set that did not migrate, please let me know and I will try to incorporate them.
-
-After your migration is complete, please remove the Miniloader migration mod.
-
-*Note: All Miniloader and Filter Miniloader items in inventories and containers are gone.  This is a one time loss - sorry.  Assemblers creating miniloaders will now be idle and need to manually be configured with a new recipe.
-
--Kryojenik
-
-*** BACKUP *** BACKUP *** BACKUP ***]]
-
-local not_migrated_notice =
-[[The following loaders were not migrated.  If you save now and KEEP the Miniloader migration mod enabled this list will be maintained.
-
-The only way to remove these dummy / non-functional loader is via this window or by disabling the Miniloader migration mod.
-
-You can reopen this list with the command /mdrn-migrations.
-
-Please report any belt packs that result in miniloaders not migrating and I may be able to add support.
-
--Kryojenik]]
-
-local filter_notice =
-[[The following lodaers had complex, split lane configuraitons that will not be supported in this implementation.  Only one filter per lane is allowed.
-Engineer intervention is required to set the desired filters.
-
-You can return to this list with the command /mdrn-migration.  If you disable the Miniloader migration mod these dummy loaders will be removed.]]
-
 -- Forward declaration
 local create_filter_list
 
@@ -42,7 +8,6 @@ local create_filter_list
 ---@param old_ldr LuaEntity
 ---@return boolean
 local function replace_miniloader(old_ldr)
-  -- TODO: Improve name change / mapping for other belt addition mods (ultimate belts / 5dim / etc...)
   local name = string.gsub(old_ldr.name, "miniloader", "mdrn")
   ---@type boolean | integer
   local was_filter = 0
@@ -314,7 +279,7 @@ end
 ---Generate the content list of loaders with complex split-lane filters
 local function complex_split_loaders()
   if not storage.complex_split or not next(storage.complex_split) then
-    return {{type = "label", caption = "No complex split-lane loaders found. "}}
+    return {{type = "label", caption = { "strings.mmm-no-complex" }}}
   end
 
   local elems = {}
@@ -322,13 +287,13 @@ local function complex_split_loaders()
     local loader = v.ldr
     local filters = v.filters
     elems = table.array_merge{elems, {
-      { type = "label", caption = loader.name },
-      { type = "label", caption = "Location: " .. loader.position.x .. ", " .. loader.position.y .. ", " .. loader.surface.name },
+      { type = "label", caption = loader.localised_name },
+      { type = "label", caption = { "strings.mmm-location", loader.position.x, loader.position.y, loader.surface.name }},
       {
         type = "button",
         name = k,
-        caption = "Clear",
-        tooltip = "Clear from tracking list.",
+        caption = { "strings.mmm-clear" },
+        tooltip = { "strings.mmm-clear-tip" },
         style = "red_button",
         style_mods = { height = 24 },
         handler = { [defines.events.on_gui_click] = on_clear_complex_split_clicked },
@@ -336,22 +301,22 @@ local function complex_split_loaders()
       {
         type = "button",
         name = loader.gps_tag,
-        caption = "Ping",
-        tooltip = "Print a gps link in chat.",
+        caption = { "strings.mmm-ping" },
+        tooltip = { "strings.mmm-ping-tip" },
         style_mods = { height = 24 },
         handler = { [defines.events.on_gui_click] = on_ping_miniloader_clicked },
       },
       {
         type = "label",
-        caption = "Filter mode: " .. v.filter_mode
+        caption = { "strings.mmm-filter-mode", v.filter_mode }
       },
       {
         type = "label",
-        caption = "Left: ".. item_list(filters.left)
+        caption = { "strings.mmm-left", item_list(filters.left) }
       },
       {
         type = "label",
-        caption = "Right: " .. item_list(filters.right)
+        caption = { "strings.mmm-right", item_list(filters.right) }
       },
     }}
   end
@@ -361,19 +326,19 @@ end
 ---Generate the content for the list of loaders that were not migrated
 local function non_migrated_loaders()
   if not storage.miniloaders_to_migrate or not next(storage.miniloaders_to_migrate) then
-    return {{ type = "label", caption = "No more Miniloaders left to migrate!" }}
+    return {{ type = "label", caption = { "strings-mmm-no-more-migrate" } }}
   end
 
   local elems = {}
   for k, v in pairs(storage.miniloaders_to_migrate) do
     elems = table.array_merge{elems, {
       { type = "label", caption = v.name },
-      { type = "label", caption = "Location: " .. v.position.x .. ", " .. v.position.y .. ", " .. v.surface.name },
+      { type = "label", caption = { "strings.mmm-location", v.position.x, v.position.y, v.surface.name }},
       {
         type = "button",
         name = k,
-        caption = "Remove",
-        tooltip = "Remove entity from surface.",
+        caption = { "strings.mmm-remove" },
+        tooltip = { "strings.mmm-remove-tip" },
         style = "red_button",
         style_mods = { height = 24 },
         handler = { [defines.events.on_gui_click] = on_remove_clicked },
@@ -381,8 +346,8 @@ local function non_migrated_loaders()
       {
         type = "button",
         name = v.gps_tag,
-        caption = "Ping",
-        tooltip = "Print a gps link in chat.",
+        caption = { "strings.mmm-ping" },
+        tooltip = { "strings.mmm-ping-tip" },
         style_mods = { height = 24 },
         handler = { [defines.events.on_gui_click] = on_ping_miniloader_clicked },
       },
@@ -409,12 +374,12 @@ create_filter_list = function(e)
     type = "frame",
     name = "mdrn_loader_filter_window",
     direction = "vertical",
-    caption = "Loaders Modernized - Filters altered",
+    caption = { "strings.mmm-filter-title" },
     elem_mods = { auto_center = true },
     {
       type = "frame",
       style = "inside_shallow_frame_with_padding",
-      { type = "label", style_mods = { single_line = false }, caption = filter_notice },
+      { type = "label", style_mods = { single_line = false }, caption = { "strings.mmm-filter-notice" }},
     },
     {
       type = "scroll-pane",
@@ -471,12 +436,12 @@ local function create_not_migrated_list(pi)
     type = "frame",
     name = "mdrn_loader_list_window",
     direction = "vertical",
-    caption = "Loaders Modernized - Miniloaders not migrated",
+    caption = { "strings.mmm-not-migrated-title" },
     elem_mods = { auto_center = true },
     {
       type = "frame",
       style = "inside_shallow_frame_with_padding",
-      { type = "label", style_mods = { single_line = false }, caption = not_migrated_notice },
+      { type = "label", style_mods = { single_line = false }, caption = { "strings.mmm-not-migrated-notice" } },
     },
     {
       type = "scroll-pane",
@@ -497,7 +462,8 @@ local function create_not_migrated_list(pi)
         {
           type = "button",
           style = "red_button",
-          caption = "Remove all!",
+          caption = { "strings.mmm-remove-all" },
+          tooltip = { "strings.mmm-remove-all-tip" },
           handler = {
             [defines.events.on_gui_click] = on_remove_all_clicked
           },
@@ -557,12 +523,12 @@ local function create_notification(player)
     name = "mdrn_loader_warning_window",
     style_mods = { width = 500 },
     direction = "vertical",
-    caption = "Loaders Modernized",
+    caption = { "strings.mmm-title" },
     elem_mods = { auto_center = true },
     {
       type = "frame",
       style = "inside_shallow_frame_with_padding",
-      { type = "label", style_mods = { single_line = false }, caption = warning_notice },
+      { type = "label", style_mods = { single_line = false }, caption = { "strings.mmm-warning-notice" } },
     },
     {
       type = "flow",
@@ -572,8 +538,8 @@ local function create_notification(player)
       {
         type = "button",
         style = "confirm_button",
-        caption = "Migrate!",
-        tooltip = "Migrate Miniloaders that we can migrate, GO! GO! GO!",
+        caption = { "strings.mmm-migrate" },
+        tooltip = { "strings.mmm-migrate-tip" },
         handler = {
           [defines.events.on_gui_click] = replace_miniloaders
         },

@@ -93,7 +93,8 @@ end
 local function create_dummy_entities(prefix)
   local inserter = copy_prototype(data.raw["inserter"]["inserter"], {
     name = prefix .. "miniloader-inserter",
-    localised_name = "Loader (" .. prefix .. ") migration dummy",
+    localised_name = { "strings.mmm-dummy", prefix },
+    localised_description = { "strings.mmm-dummy-description" },
     icon = "NIL",
     platform_picture = "NIL",
     hand_base_picture = "NIL",
@@ -114,7 +115,8 @@ local function create_dummy_entities(prefix)
   filter_inserter.name = prefix .. "filter-miniloader-inserter"
   local loader = copy_prototype(data.raw["loader-1x1"]["loader-1x1"], {
     name = prefix .. "miniloader-loader",
-    localised_name = "Loader (" .. prefix .. ") migration dummy",
+    localised_name = { "strings.mmm-dummy", prefix },
+    localised_description = { "strings.mmm-dummy-description" },
     minable = "NIL",
     placeable_by = "NIL",
     icon = "NIL",
