@@ -121,7 +121,7 @@ local function create_dummy_entities(prefix)
     structure = {
       direction_in = {
         sheets = {{
-          filename = "__loaders-modernized__/graphics/entity/mdrn-loader-structure-base.png",
+          filename = "__miniloader-migration__/graphics/entity/mdrn-loader-structure-base.png",
           width = 192,
           height = 192,
           scale = 0.5,
@@ -129,7 +129,7 @@ local function create_dummy_entities(prefix)
       },
       direction_out = {
         sheets = {{
-          filename = "__loaders-modernized__/graphics/entity/mdrn-loader-structure-base.png",
+          filename = "__miniloader-migration__/graphics/entity/mdrn-loader-structure-base.png",
           width = 192,
           height = 192,
           scale = 0.5,

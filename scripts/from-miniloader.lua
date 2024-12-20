@@ -10,22 +10,18 @@ Please make sure you have a backup of your game save before you save this migrat
 
 If you notice loaders from a belt set that did not migrate, please let me know and I will try to incorporate them.
 
-After your migration is complete, please disable the startup setting to migrate Miniloaders.
+After your migration is complete, please remove the Miniloader migration mod.
 
-Game engine limitations:
-- Any loader that had a blacklist filter will now be a whitelist filter.
-- Any "input" loader will ignore filter that are set.
-
-*Note: All Miniloader and Filter Miniloader items in inventories and Container are gone.  This is a one time loss - sorry.  Assemblers creating miniloaders will now be idle and need to manually be configured for a new recipe.
+*Note: All Miniloader and Filter Miniloader items in inventories and containers are gone.  This is a one time loss - sorry.  Assemblers creating miniloaders will now be idle and need to manually be configured with a new recipe.
 
 -Kryojenik
 
 *** BACKUP *** BACKUP *** BACKUP ***]]
 
 local not_migrated_notice =
-[[The following loaders were not migrated.  If you save now and KEEP the Migrate Miniloaders setting enabled this list will be maintained.
+[[The following loaders were not migrated.  If you save now and KEEP the Miniloader migration mod enabled this list will be maintained.
 
-The only way to remove these dummy / non-functional loader is via this window or disabling the Migrate Miniloader setting.
+The only way to remove these dummy / non-functional loader is via this window or by disabling the Miniloader migration mod.
 
 You can reopen this list with the command /mdrn-migrations.
 
@@ -34,11 +30,10 @@ Please report any belt packs that result in miniloaders not migrating and I may 
 -Kryojenik]]
 
 local filter_notice =
-[[The following loaders either had a filter set as an "input" (filling container) loader or they had a filter set as a blacklist filtered.  Both of these are not allowed due to game engine limitations.  These filters have been removed.
+[[The following lodaers had complex, split lane configuraitons that will not be supported in this implementation.  Only one filter per lane is allowed.
+Engineer intervention is required to set the desired filters.
 
-I am currently working on enhancing the migration to migrate blacklists and split lanes.  This will take a little more time.
-
-You can return to this list with the command /mdrn-migrations.]]
+You can return to this list with the command /mdrn-migration.  If you disable the Miniloader migration mod these dummy loaders will be removed.]]
 
 -- Forward declaration
 local create_filter_list
@@ -48,9 +43,9 @@ local create_filter_list
 ---@return boolean
 local function replace_miniloader(old_ldr)
   -- TODO: Improve name change / mapping for other belt addition mods (ultimate belts / 5dim / etc...)
+  local name = string.gsub(old_ldr.name, "miniloader", "mdrn")
   ---@type boolean | integer
   local was_filter = 0
-  local name = string.gsub(old_ldr.name, "miniloader", "mdrn")
   name, was_filter = string.gsub(name, "filter%-", "")
   was_filter = (was_filter > 0)
   if not prototypes.entity[name] then
@@ -62,6 +57,7 @@ local function replace_miniloader(old_ldr)
   local filter_mode = inserters[1].inserter_filter_mode
   local filters = {}
   local split_lanes = false
+  local complex_split = false
 
   if was_filter then
     local filters_left = {}
@@ -90,7 +86,11 @@ local function replace_miniloader(old_ldr)
     if split_lanes then
       if #filters_left > 1 or #filters_right > 1 then
         -- Complex split lanes not supported
-        return false
+        complex_split = true
+        filters = {
+          left = filters_left,
+          right = filters_right
+        }
       else
         filters_right[1].index = 2
         filters = {
@@ -106,13 +106,13 @@ local function replace_miniloader(old_ldr)
 
   local new_ldr_proto = {
     name = split_lanes and name .. "-split" or name,
-    position= old_ldr.position,
+    position = old_ldr.position,
     direction = old_ldr.direction,
     force = old_ldr.force,
     player = inserters[1].last_user,
     type = old_ldr.loader_type,
     create_build_effect_smoke = false,
-    filters = filters
+    filters = not complex_split and filters or nil
   }
 
   -- Save the control behavior details
@@ -150,8 +150,16 @@ local function replace_miniloader(old_ldr)
     return false
   end
 
+  if complex_split then
+    storage.complex_split[new_ldr.unit_number] = {
+      ldr = new_ldr,
+      filters = filters,
+      filter_mode = filter_mode
+    }
+  end
+
   if was_filter then
-    new_ldr.loader_filter_mode = filter_mode
+    new_ldr.loader_filter_mode = complex_split and "whitelist" or filter_mode
   end
 
   if old_cb then
@@ -236,52 +244,28 @@ end
 
 ---Remove loader from the blacklist filter list
 ---@param i_ml integer
-local function clear_blacklist(i_ml)
-  storage.no_blacklist[i_ml] = nil
+local function clear_complex_split(i_ml)
+  storage.complex_split[i_ml] = nil
 end
 
 ---Handle on_clear_blacklist_clicked
 ---@param e EventData.on_gui_click
-local function on_clear_blacklist_clicked(e)
-  local i_ml = tonumber(e.element.name)
-  if not i_ml then
-    return
-  end
-  
-  clear_blacklist(i_ml)
-  e.element.enabled = false
-end
-
----Remove a loader from the input loader with filter list
----@param i_ml integer
-local function clear_input(i_ml)
-  storage.no_input_filter[i_ml] = nil
-end
-
----Handle on_clear_input_clicked
----@param e EventData.on_gui_click
-local function on_clear_input_clicked(e)
+local function on_clear_complex_split_clicked(e)
   local i_ml = tonumber(e.element.name)
   if not i_ml then
     return
   end
 
-  clear_input(i_ml)
+  clear_complex_split(i_ml)
   e.element.enabled = false
 end
 
 ---Handle on_clear_all_clicked
 ---@param e EventData.on_gui_click
 local function on_clear_all_clicked(e)
-  if storage.no_input_filter and next(storage.no_input_filter) then
-    for k,_ in pairs(storage.no_input_filter) do
-      clear_input(k)
-    end
-  end
-
-  if storage.no_blacklist and next(storage.no_blacklist) then
-    for k,_ in pairs(storage.no_blacklist) do
-      clear_blacklist(k)
+  if storage.complex_split and next(storage.complex_split) then
+    for k,_ in pairs(storage.complex_split) do
+      clear_complex_split(k)
     end
   end
 
@@ -318,52 +302,28 @@ local function on_remove_all_clicked(e)
   on_next_clicked(e)
 end
 
----Generate the content list of loaders that were input loaders with filters
----@return flib.GuiElemDef
-local function input_loaders()
-  if not storage.no_input_filter or not next(storage.no_input_filter) then
-    return {{type = "label", caption = "No input loader filter issues found. "}}
+local function item_list(filters)
+  local items
+  for _, f in ipairs(filters) do
+    item = "[item=" .. f.name .. ",quality=" .. f.quality .. "]"
+    items = items and items .. " " .. item or item
   end
-
-  local elems = {}
-  for k, v in pairs(storage.no_input_filter) do
-    elems = table.array_merge{elems, {
-      { type = "label", caption = v.name },
-      { type = "label", caption = "Location: " .. v.position.x .. ", " .. v.position.y .. ", " .. v.surface.name },
-      {
-        type = "button",
-        name = k,
-        caption = "Clear",
-        tooltip = "Clear from tracking list.",
-        style = "red_button",
-        style_mods = { height = 24 },
-        handler = { [defines.events.on_gui_click] = on_clear_input_clicked },
-      },
-      {
-        type = "button",
-        name = v.gps_tag,
-        caption = "Ping",
-        tooltip = "Print a gps link in chat.",
-        style_mods = { height = 24 },
-        handler = { [defines.events.on_gui_click] = on_ping_miniloader_clicked },
-      },
-    }}
-  end
-  return elems
+  return items
 end
 
----Generate the content list of loaders with blacklist filters
----@return flib.GuiElemDef
-local function loaders_with_blacklist_filter()
-  if not storage.no_blacklist or not next(storage.no_blacklist) then
-    return {{type = "label", caption = "No blacklist filter issues found. "}}
+---Generate the content list of loaders with complex split-lane filters
+local function complex_split_loaders()
+  if not storage.complex_split or not next(storage.complex_split) then
+    return {{type = "label", caption = "No complex split-lane loaders found. "}}
   end
 
   local elems = {}
-  for k, v in pairs(storage.no_blacklist) do
+  for k, v in pairs(storage.complex_split) do
+    local loader = v.ldr
+    local filters = v.filters
     elems = table.array_merge{elems, {
-      { type = "label", caption = v.name },
-      { type = "label", caption = "Location: " .. v.position.x .. ", " .. v.position.y .. ", " .. v.surface.name },
+      { type = "label", caption = loader.name },
+      { type = "label", caption = "Location: " .. loader.position.x .. ", " .. loader.position.y .. ", " .. loader.surface.name },
       {
         type = "button",
         name = k,
@@ -371,15 +331,27 @@ local function loaders_with_blacklist_filter()
         tooltip = "Clear from tracking list.",
         style = "red_button",
         style_mods = { height = 24 },
-        handler = { [defines.events.on_gui_click] = on_clear_blacklist_clicked },
+        handler = { [defines.events.on_gui_click] = on_clear_complex_split_clicked },
       },
       {
         type = "button",
-        name = v.gps_tag,
+        name = loader.gps_tag,
         caption = "Ping",
         tooltip = "Print a gps link in chat.",
         style_mods = { height = 24 },
         handler = { [defines.events.on_gui_click] = on_ping_miniloader_clicked },
+      },
+      {
+        type = "label",
+        caption = "Filter mode: " .. v.filter_mode
+      },
+      {
+        type = "label",
+        caption = "Left: ".. item_list(filters.left)
+      },
+      {
+        type = "label",
+        caption = "Right: " .. item_list(filters.right)
       },
     }}
   end
@@ -387,7 +359,6 @@ local function loaders_with_blacklist_filter()
 end
 
 ---Generate the content for the list of loaders that were not migrated
----@return flib.GuiElemDef[]
 local function non_migrated_loaders()
   if not storage.miniloaders_to_migrate or not next(storage.miniloaders_to_migrate) then
     return {{ type = "label", caption = "No more Miniloaders left to migrate!" }}
@@ -453,18 +424,8 @@ create_filter_list = function(e)
         {
           type = "table",
           name = "mdrn_loader_table",
-          column_count = 4,
-          children = input_loaders()
-        },
-      },
-      {
-        type = "frame",
-        style = "inside_shallow_frame_with_padding",
-        {
-          type = "table",
-          name = "mdrn_loader_table",
-          column_count = 4,
-          children = loaders_with_blacklist_filter()
+          column_count = 7,
+          children = complex_split_loaders()
         },
       },
       {
@@ -558,8 +519,7 @@ end
 ---Replace found Miniloaders
 ---@param e EventData.on_gui_click
 local function replace_miniloaders(e)
-  storage.no_blacklist = storage.no_blacklist or {}
-  storage.no_input_filter = storage.no_input_filter or {}
+  storage.complex_split = storage.complex_split or {}
   for i_ml, ml in pairs(storage.miniloaders_to_migrate) do
     if replace_miniloader(ml) then
       storage.miniloaders_to_migrate[i_ml] = nil
@@ -630,8 +590,7 @@ flib_gui.add_handlers{
   on_next_clicked = on_next_clicked,
   on_remove_all_clicked = on_remove_all_clicked,
   on_clear_all_clicked = on_clear_all_clicked,
-  on_clear_input_clicked = on_clear_input_clicked,
-  on_clear_blacklist_clicked = on_clear_blacklist_clicked,
+  on_clear_complex_split_clicked = on_clear_complex_split_clicked,
   on_closed_clicked = on_closed_clicked,
 }
 
