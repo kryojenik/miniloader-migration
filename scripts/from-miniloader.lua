@@ -67,12 +67,14 @@ local function replace_miniloader(old_ldr)
     local filters_left = {}
     local filters_right = {}
     for i=1,inserters[1].prototype.filter_count do
-      local left = inserters[1].get_filter(i) or nil
+      ---@type InventoryFilter?
+      local left = inserters[1].get_filter(i) --[[@as InventoryFilter]] or nil
       if left then
         left.index = i
       end
 
-      local right = inserters[2].get_filter(i) or nil
+      ---@type InventoryFilter?
+      local right = inserters[2].get_filter(i) --[[@as InventoryFilter]] or nil
       if right then
         right.index = i
       end
