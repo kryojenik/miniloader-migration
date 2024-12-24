@@ -1,4 +1,10 @@
 ---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: ????
+  Bugfixes:
+    - Crashing when migrating split lane loaders when the filter for the left lane was not in "slot 1"
+    - Fix typo in local string
+---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 2024-12-20
   Info:

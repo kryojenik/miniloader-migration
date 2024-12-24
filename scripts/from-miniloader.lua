@@ -57,7 +57,12 @@ local function replace_miniloader(old_ldr)
           right = filters_right
         }
       else
-        filters_right[1].index = 2
+        if filters_left[1] then
+          filters_left[1].index = 1
+        end
+        if filters_right[1] then
+          filters_right[1].index = 2
+        end
         filters = {
           filters_left[1],
           filters_right[1],
@@ -326,7 +331,7 @@ end
 ---Generate the content for the list of loaders that were not migrated
 local function non_migrated_loaders()
   if not storage.miniloaders_to_migrate or not next(storage.miniloaders_to_migrate) then
-    return {{ type = "label", caption = { "strings-mmm-no-more-migrate" } }}
+    return {{ type = "label", caption = { "strings.mmm-no-more-migrate" } }}
   end
 
   local elems = {}
