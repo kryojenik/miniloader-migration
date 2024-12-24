@@ -1,6 +1,6 @@
 {
     "name": "miniloader-migration",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "title": "Modernized Miniloader Migration",
     "description": "Migrate Miniloaders used in Factorio 1.x saves to Loaders Modernized for use in Factorio 2.x",
     "author": "kryojenik",
